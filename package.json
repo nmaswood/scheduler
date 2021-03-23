@@ -12,7 +12,7 @@
     "build": "yarn tsc",
     "tsc:watch": "tsc --watch",
     "start:dev": "ts-node src/index.ts",
-    "start:prod": "node dist/index.ts",
+    "start:prod": "node dist/index.js",
     "dev": "nodemon --exec 'ts-node --cache-directory .tscache' src/index.ts",
     "lint": "eslint src",
     "wp": "webpack",

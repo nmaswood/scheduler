@@ -11,4 +11,4 @@ COPY . ./
 
 RUN yarn build && rm -rf src
 
-CMD [ "yarn", "start" ]
+CMD [ "yarn", "start:prod" ]
