@@ -8,12 +8,9 @@ on:
 
 jobs:
   build:
-    # The type of runner that the job will run on
     runs-on: ubuntu-latest
 
-    # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-    # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - uses: actions/checkout@v2
     - name: Get yarn cache
       id: yarn-cache
@@ -32,4 +29,17 @@ jobs:
       run: yarn
     - name: build
       run: yarn build
+
+    - uses: google-github-actions/setup-gcloud@master
+      with:
+        project_id: ${{ secrets.GCP_PROJECT_ID }}
+        service_account_key: ${{ secrets.GCP_SA_KEY }}
+        export_default_credentials: true
+
+    - name: Build Docker Image and Deploy to k8s
+      run: |
+        gcloud auth configure-docker --quiet
+        docker build . -f Dockerfile -t "nasr/scheduler:$(git rev-parse --short HEAD)"
+        docker tag "nasr/scheduler:$(git rev-parse --short HEAD)" gcr.io/nasr-learn/nasr/scheduler:latest
+        docker push gcr.io/nasr-learn/nasr/scheduler
 
