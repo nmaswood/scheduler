@@ -44,4 +44,4 @@ jobs:
         docker push gcr.io/nasr-learn/nasr/scheduler
     - name: Deploy to cloud run
       run: |
-        gcloud run deploy scheduler --image gcr.io/nasr-learn/nasr/scheduler@latest
+        gcloud run deploy scheduler --image gcr.io/nasr-learn/nasr/scheduler@latest --platform managed --region us-central1
