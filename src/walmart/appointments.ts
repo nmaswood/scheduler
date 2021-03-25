@@ -9,13 +9,13 @@ import * as Types from "../types";
 
 import * as t from "io-ts";
 
-export const getAppointment = (headers: Record<string, string>) => (
+export const appointment = (headers: Record<string, string>) => (
   storeId: string
-): Promise<E.Either<string, Types.Appointment[]>> =>
+): TE.TaskEither<string, Types.Appointment[]> =>
   F.pipe(
     TE.tryCatch(
       () =>
-        axios.post<unknown>(SCHEDULING_URL, requestBody(storeId), {
+        axios.post<{ data: unknown }>(SCHEDULING_URL, requestBody(storeId), {
           headers,
         }),
       (error) =>
@@ -24,7 +24,7 @@ export const getAppointment = (headers: Record<string, string>) => (
     TE.chain((response) =>
       TE.fromEither(
         P.pipe(
-          response.data,
+          response.data.data,
           AppointmentResponse.decode,
           E.map(fromAppointmentResponse(storeId)),
           E.mapLeft(
@@ -33,14 +33,14 @@ export const getAppointment = (headers: Record<string, string>) => (
         )
       )
     )
-  )();
+  );
 
 const fromAppointmentResponse = (storeId: string) => (
   response: AppointmentResponse
 ): Types.Appointment[] =>
   response.slotDays
-    .filter((s) => s.message.startsWith("There are no appointments"))
-    .map(({ slotDate }) => ({ storeId, time: slotDate }));
+    .filter((s) => !s.message.startsWith("There are no appointments"))
+    .map(({ slotDate, message }) => ({ message, storeId, time: slotDate }));
 
 type AppointmentResponse = t.TypeOf<typeof AppointmentResponse>;
 const AppointmentResponse = t.type({

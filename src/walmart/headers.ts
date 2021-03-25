@@ -27,7 +27,7 @@ const cookieString = (cookies: Cookie[]) =>
 const login = (email: string, password: string) => async (): Promise<
   Cookie[]
 > => {
-  const browser = await puppeteer.launch({ headless: false });
+  const browser = await puppeteer.launch();
   const page = await browser.newPage();
   await page.goto(
     "https://www.walmart.com/account/login?tid=0&returnUrl=%2Feasyreorder",
