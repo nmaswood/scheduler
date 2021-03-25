@@ -36,8 +36,12 @@ describe("walmart", () => {
 
   test("fetch appointments from walmart", async () => {
     const result = await Walmart.fetchResults("CT", email, password)();
-    console.log({ result });
 
     expect(E.isRight(result)).toEqual(true);
+    if (!E.isRight(result)) {
+      throw new Error("impossible");
+    }
+
+    console.log(JSON.stringify(result.right, null, 2));
   }, 60000);
 });

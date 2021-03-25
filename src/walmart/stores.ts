@@ -27,7 +27,10 @@ export const stores = (state: State) => (): TE.TaskEither<
         F.pipe(
           t.array(WalmartStore).decode(json),
           E.map((stores) =>
-            stores.map((store) => ({ ...store, id: store.id.toString() }))
+            stores.map(({ displayName, id }) => ({
+              displayName,
+              id: id.toString(),
+            }))
           ),
           E.mapLeft((e) => `Could not decode stores ${JSON.stringify(e)}`)
         )
