@@ -21,4 +21,10 @@ export const EntityAppointments = t.type({
   entity: Entity,
   appointments: Appointment,
 });
+
 export type EntityAppointments = t.TypeOf<typeof EntityAppointments>;
+
+export interface Result {
+  stores: Store[];
+  appointments: Appointment[];
+}

@@ -10,11 +10,15 @@ import * as Types from "../types";
 
 import * as t from "io-ts";
 
-const PATH = path.join(__dirname, "..", "resources", "store-data.json");
-export const stores = (): TE.TaskEither<string, Types.Store[]> =>
+export type State = "CT";
+
+export const stores = (state: State) => (): TE.TaskEither<
+  string,
+  Types.Store[]
+> =>
   F.pipe(
     TE.tryCatch(
-      () => fs.readFile(PATH, "utf8"),
+      () => fs.readFile(pathFromState(state), "utf8"),
       (e) => `Could not read store data ${e}`
     ),
     TE.map(JSON.parse),
@@ -23,7 +27,10 @@ export const stores = (): TE.TaskEither<string, Types.Store[]> =>
         F.pipe(
           t.array(WalmartStore).decode(json),
           E.map((stores) =>
-            stores.map((store) => ({ ...store, id: store.id.toString() }))
+            stores.map(({ displayName, id }) => ({
+              displayName,
+              id: id.toString(),
+            }))
           ),
           E.mapLeft((e) => `Could not decode stores ${JSON.stringify(e)}`)
         )
@@ -31,6 +38,18 @@ export const stores = (): TE.TaskEither<string, Types.Store[]> =>
     )
   );
 
+function pathFromState(state: State): string {
+  switch (state) {
+    case "CT":
+      return withPrefix("ct-store-data.json");
+    default:
+      throw new Error(`unknown state ${state}`);
+  }
+}
+
+function withPrefix(name: string): string {
+  return path.join(__dirname, "..", "..", "resources", name);
+}
 const WalmartStore = t.type({
   id: t.number,
   displayName: t.string,

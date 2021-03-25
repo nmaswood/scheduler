@@ -27,8 +27,13 @@ const cookieString = (cookies: Cookie[]) =>
 const login = (email: string, password: string) => async (): Promise<
   Cookie[]
 > => {
-  const browser = await puppeteer.launch({ headless: false });
+  const browser = await puppeteer.launch();
+
   const page = await browser.newPage();
+  await page.setUserAgent(
+    "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.108 Safari/537.36"
+  );
+
   await page.goto(
     "https://www.walmart.com/account/login?tid=0&returnUrl=%2Feasyreorder",
 
@@ -40,8 +45,8 @@ const login = (email: string, password: string) => async (): Promise<
 
   await page.type("#email", email);
   await page.type("#password", password);
-  await page.focus("#password");
-  await page.keyboard.press("Enter");
+
+  await page.click("#sign-in-form > button:first-of-type");
 
   await page.waitForSelector("#global-search-form");
 
