@@ -69,13 +69,13 @@ const AppointmentResponse = t.type({
 
 function requestBody(storeId: string) {
   const now = new Date();
-  const fiveDays = addDays(now, 5);
+  const fiveDays = addDays(now, 6);
   return {
+    startDate: formatDate(now),
+    endDate: formatDate(fiveDays),
     imzStoreNumber: {
       USStoreId: Number(storeId),
     },
-    startDate: formatDate(now),
-    endDate: formatDate(fiveDays),
   } as const;
 }
 

@@ -7,7 +7,8 @@ export const headers = (email: string, password: string) => () =>
   F.pipe(
     TE.tryCatch(
       login(email, password),
-      (e) => `Could not login: ${JSON.stringify(e)}`
+      (e) =>
+        `Could not login: ${JSON.stringify(e, Object.getOwnPropertyNames(e))}`
     ),
     TE.map(cookieString),
     TE.map((cookie) => ({
@@ -27,7 +28,7 @@ const cookieString = (cookies: Cookie[]) =>
 const login = (email: string, password: string) => async (): Promise<
   Cookie[]
 > => {
-  const browser = await puppeteer.launch();
+  const browser = await puppeteer.launch({ args: ["--no-sandbox"] });
 
   const page = await browser.newPage();
   await page.setUserAgent(

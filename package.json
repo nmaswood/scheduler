@@ -12,7 +12,7 @@
     "build": "yarn tsc",
     "tsc:watch": "tsc --watch",
     "start": "ts-node src/index.ts",
-    "start:prod": "node dist/index.js",
+    "start:prod": "node dist/src/index.js",
     "dev": "PORT=8081 nodemon --exec 'ts-node src/index.ts'",
     "lint": "eslint src",
     "wp": "webpack",
@@ -27,7 +27,8 @@
     "fp-ts": "^2.7.1",
     "io-ts": "^2.2.16",
     "jest": "^26.2.2",
-    "puppeteer": "^8.0.0"
+    "puppeteer": "^8.0.0",
+    "twilio": "^3.59.0"
   },
   "devDependencies": {
     "@types/jest": "^26.0.21",

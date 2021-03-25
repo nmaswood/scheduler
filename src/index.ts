@@ -1,14 +1,18 @@
 import fastify from "fastify";
+
 import * as Walmart from "./walmart";
 import * as C from "./config";
 import * as E from "fp-ts/lib/Either";
-
-import * as TE from "fp-ts/lib/TaskEither";
-import * as F from "fp-ts/function";
+import * as SMS from "./sms";
 
 const server = fastify();
-const port = process.env.PORT ?? "8080";
-const host = process.env.HOST ?? "0.0.0.0";
+
+const MESSAGE_SENDER = SMS.sendMessage(
+  C.CONFIGURATION.twilioSid,
+  C.CONFIGURATION.twilioAuthToken,
+  C.CONFIGURATION.twilioFrom,
+  C.CONFIGURATION.twilioTo
+);
 
 server.get("/", async () => "OKAY");
 server.get("/ping", async () => "pong");
@@ -20,6 +24,7 @@ server.get("/results", async (_, reply) => {
   )();
 
   if (E.isRight(result)) {
+    await MESSAGE_SENDER(result.right);
     reply
       .code(200)
       .header("Content-Type", "application/json; charset=utf-8")
@@ -29,8 +34,7 @@ server.get("/results", async (_, reply) => {
   }
 });
 
-server.listen(port, host, (err, address) => {
-  console.log(host);
+server.listen(C.CONFIGURATION.port, C.CONFIGURATION.host, (err, address) => {
   if (err) {
     console.error(err);
     process.exit(1);
