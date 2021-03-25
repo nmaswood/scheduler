@@ -34,29 +34,10 @@ describe("walmart", () => {
     expect(E.isRight(appointment)).toEqual(true);
   }, 60000);
 
-  xit("fetch appointments from walmart", async () => {
-    const res = await F.pipe(
-      Walmart.stores("CT")(),
-      TE.chain((stores) =>
-        F.pipe(
-          Walmart.headers(email, password)(),
-          TE.chain((headers) =>
-            Walmart.appointments(headers)(stores.map((s) => s.id))
-          )
-        )
-      )
-    )();
+  test("fetch appointments from walmart", async () => {
+    const result = await Walmart.fetchResults("CT", email, password)();
+    console.log({ result });
 
-    const headers = await Walmart.headers(email, password)()();
-    expect(E.isRight(headers)).toEqual(true);
-    if (E.isLeft(headers)) {
-      throw new Error("invalid");
-    }
-
-    const STORE_IDS = ["2719"];
-
-    const appointment = await Walmart.appointments(headers.right)(STORE_IDS)();
-
-    expect(E.isRight(appointment)).toEqual(true);
+    expect(E.isRight(result)).toEqual(true);
   }, 60000);
 });

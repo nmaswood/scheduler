@@ -48,14 +48,20 @@ const fromAppointmentResponse = (storeId: string) => (
   response: AppointmentResponse
 ): Types.Appointment[] =>
   response.slotDays
-    .filter((s) => !s.message.startsWith("There are no appointments"))
+    .filter(
+      (s) =>
+        !(
+          typeof s.message === "string" &&
+          s.message.startsWith("There are no appointments")
+        )
+    )
     .map(({ slotDate, message }) => ({ message, storeId, time: slotDate }));
 
 type AppointmentResponse = t.TypeOf<typeof AppointmentResponse>;
 const AppointmentResponse = t.type({
   slotDays: t.array(
     t.type({
-      message: t.string,
+      message: t.union([t.string, t.null]),
       slotDate: t.string,
     })
   ),
