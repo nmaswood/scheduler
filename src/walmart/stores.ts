@@ -10,9 +10,7 @@ import * as Types from "../types";
 
 import * as t from "io-ts";
 
-export type State = "CT";
-
-export const stores = (state: State) => (): TE.TaskEither<
+export const stores = (state: Types.State) => (): TE.TaskEither<
   string,
   Types.Store[]
 > =>
@@ -38,7 +36,7 @@ export const stores = (state: State) => (): TE.TaskEither<
     )
   );
 
-function pathFromState(state: State): string {
+function pathFromState(state: Types.State): string {
   switch (state) {
     case "CT":
       return withPrefix("ct-store-data.json");

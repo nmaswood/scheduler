@@ -6,7 +6,7 @@ import * as A from "./appointments";
 import * as H from "./headers";
 
 export const fetchResults = (
-  state: S.State,
+  state: Types.State,
   email: string,
   password: string
 ): TE.TaskEither<string, Types.Result> =>
@@ -24,4 +24,30 @@ export const fetchResults = (
         )
       )
     )
+  );
+
+export const fetchResultsWithDisplayName = (
+  state: Types.State,
+  email: string,
+  password: string
+): TE.TaskEither<
+  string,
+  {
+    storeDisplayName: string;
+    time: string;
+  }[]
+> =>
+  F.pipe(
+    fetchResults(state, email, password),
+    TE.map(({ stores, appointments }) => {
+      const byStoreId = stores.reduce((acc, el) => {
+        acc[el.id] = el;
+        return acc;
+      }, {} as Record<string, Types.Store>);
+
+      return appointments.map((a) => ({
+        storeDisplayName: byStoreId[a.storeId].displayName,
+        time: a.time,
+      }));
+    })
   );

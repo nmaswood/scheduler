@@ -1,7 +1,7 @@
 import * as t from "io-ts";
 
-export const Entity = t.keyof({ walmart: null });
-export type Entity = t.TypeOf<typeof Entity>;
+export const State = t.keyof({ CT: null });
+export type State = t.TypeOf<typeof State>;
 
 export const Store = t.type({
   id: t.string,
@@ -16,13 +16,6 @@ export const Appointment = t.type({
   storeId: t.string,
   time: t.string,
 });
-
-export const EntityAppointments = t.type({
-  entity: Entity,
-  appointments: Appointment,
-});
-
-export type EntityAppointments = t.TypeOf<typeof EntityAppointments>;
 
 export interface Result {
   stores: Store[];
