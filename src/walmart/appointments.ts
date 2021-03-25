@@ -9,7 +9,16 @@ import * as Types from "../types";
 
 import * as t from "io-ts";
 
-export const appointment = (headers: Record<string, string>) => (
+export const appointments = (headers: Record<string, string>) => (
+  storeIds: string[]
+): TE.TaskEither<string, Types.Appointment[]> =>
+  F.pipe(
+    storeIds.map((storeId) => appointment(headers)(storeId)),
+    TE.sequenceArray,
+    TE.map((results) => results.flat())
+  );
+
+const appointment = (headers: Record<string, string>) => (
   storeId: string
 ): TE.TaskEither<string, Types.Appointment[]> =>
   F.pipe(

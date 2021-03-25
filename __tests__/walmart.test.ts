@@ -1,4 +1,6 @@
+import * as F from "fp-ts/function";
 import * as E from "fp-ts/lib/Either";
+import * as TE from "fp-ts/lib/TaskEither";
 import * as Walmart from "../src/walmart";
 
 describe("walmart", () => {
@@ -6,13 +8,44 @@ describe("walmart", () => {
     const ctStores = await Walmart.stores("CT")()();
     expect(E.isRight(ctStores)).toEqual(true);
   });
+  const email = process.env.WALMART_EMAIL;
+  const password = process.env.WALMART_PASSWORD;
 
-  test("fetch headers from walmart", async () => {
-    const email = process.env.WALMART_EMAIL;
-    const password = process.env.WALMART_PASSWORD;
-    if (email == null || password == null) {
-      return;
+  if (email == null || password == null) {
+    return;
+  }
+
+  xit("fetch headers from walmart", async () => {
+    const headers = await Walmart.headers(email, password)()();
+    expect(E.isRight(headers)).toEqual(true);
+  }, 60000);
+
+  xit("fetch appointments from walmart", async () => {
+    const headers = await Walmart.headers(email, password)()();
+    expect(E.isRight(headers)).toEqual(true);
+    if (E.isLeft(headers)) {
+      throw new Error("invalid");
     }
+
+    const STORE_IDS = ["2719"];
+
+    const appointment = await Walmart.appointments(headers.right)(STORE_IDS)();
+
+    expect(E.isRight(appointment)).toEqual(true);
+  }, 60000);
+
+  xit("fetch appointments from walmart", async () => {
+    const res = await F.pipe(
+      Walmart.stores("CT")(),
+      TE.chain((stores) =>
+        F.pipe(
+          Walmart.headers(email, password)(),
+          TE.chain((headers) =>
+            Walmart.appointments(headers)(stores.map((s) => s.id))
+          )
+        )
+      )
+    )();
 
     const headers = await Walmart.headers(email, password)()();
     expect(E.isRight(headers)).toEqual(true);
@@ -20,9 +53,9 @@ describe("walmart", () => {
       throw new Error("invalid");
     }
 
-    const BRISTOL = "2719";
+    const STORE_IDS = ["2719"];
 
-    const appointment = await Walmart.appointment(headers.right)(BRISTOL)();
+    const appointment = await Walmart.appointments(headers.right)(STORE_IDS)();
 
     expect(E.isRight(appointment)).toEqual(true);
   }, 60000);
